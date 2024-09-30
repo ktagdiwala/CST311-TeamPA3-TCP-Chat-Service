@@ -11,6 +11,8 @@ __credits__ = [
 
 import socket as s
 import threading
+
+# Configure logging
 import logging
 
 logging.basicConfig()
@@ -21,7 +23,7 @@ server_port = 12000
 
 users = []
 names = []
-offline_messages = []  # List to store offline messages (each element is a tuple)
+offline_messages = []
 
 
 def connection_handler(connection_socket, address):
@@ -48,8 +50,11 @@ def connection_handler(connection_socket, address):
         try:
             # Waits to receive a message from the client
             message = connection_socket.recv(1024).decode()
+            # Logs messages exchanged by clients (used for debugging purposes)
+            # log.info("Message received by " + address[0] + ". Message: " + message)
 
             # Checks to see if the client sends "bye"
+            # Notifies the other client accordingly
             if message == "bye":
                 disconnect_message = f"{username} has left the chat"
                 send_message(connection_socket, disconnect_message.encode())
@@ -79,7 +84,7 @@ def send_message(connection_socket, message):
 
 # Stores offline messages if the other user isn't connected
 def store_offline_message(sender, message):
-    offline_messages.append((sender, message))  # Storing tuple (username, message)
+    offline_messages.append((sender, message))  # Storing (username, message)
 
 # Sends all stored offline messages to the connected user
 def send_offline_messages(username, connection_socket):
@@ -92,10 +97,6 @@ def send_offline_messages(username, connection_socket):
         sender, offline_message = message
         if sender != username:  # Deliver messages sent by other users
             connection_socket.send(f"{sender}: {offline_message}\n".encode())
-            delivered_messages.append(message)  # Mark message for deletion
-
-    # Remove the delivered messages from the offline_messages list
-    offline_messages = [msg for msg in offline_messages if msg not in delivered_messages]
 
 def main():
     # Create a TCP socket
