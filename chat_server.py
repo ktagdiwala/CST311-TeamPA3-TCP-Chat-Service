@@ -90,7 +90,6 @@ def store_offline_message(sender, message):
 def send_offline_messages(username, connection_socket):
     global offline_messages
 
-    delivered_messages = []
 
     # Deliver all messages from the other user to this user
     for message in offline_messages:
