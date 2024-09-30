@@ -75,22 +75,24 @@ def main():
     #
     # client_socket.close()
 
-
+# Allows the client to send messages to the other client through the server
 def send_message(client_socket):
 
     message = ""
 
+    # Checks to see if the message is "bye" to determine when the client wants to disconnect
     while message != "bye":
       message = input('')
       client_socket.send(message.encode())
     
+    # Client disconnects from the chat service
     client_socket.close()
 
-
+# Allows the client to receive messages from the other client through the server
 def recieve_message(client_socket):
 
-  response = ""
-  while (response != "bye"):
+  response_decoded = ""
+  while (response_decoded != "bye"):
     response = client_socket.recv(1024)
     response_decoded = response.decode()
 

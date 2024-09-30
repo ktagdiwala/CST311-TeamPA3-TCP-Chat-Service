@@ -31,8 +31,9 @@ def connection_handler(connection_socket, address):
 
     while message != "bye":
         try:
-            message = connection_socket.recv(1024)
-            send_message(connection_socket, message)
+            message = connection_socket.recv(1024).decode()
+            if message != "bye":
+              send_message(connection_socket, message.encode())
         except:
             print("Exception error when receiving data.")
 
