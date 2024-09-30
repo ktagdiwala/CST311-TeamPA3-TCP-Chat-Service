@@ -26,19 +26,24 @@ names = []
 
 
 def connection_handler(connection_socket, address):
+
+    # Asking client for a username and storing it in the local variable username
+    connection_socket.send("Enter username: ".encode())
+    username = connection_socket.recv(1024).decode()
+
     message = ""
 
     while message != "bye":
         try:
             message = connection_socket.recv(1024).decode()
 
-            log.info("Message received by " + address[0] + ". Message: " + message)
+            log.info("Message received by " + username + ". Message: " + message)
 
             if message == "bye":
-                disconnect_message = f"{address[0]}" + " has left the chat"
+                disconnect_message = f"{username} has left the chat"
                 send_message(connection_socket, disconnect_message.encode())
             else:
-                message = f"{address[0]}: " + message
+                message = f"{username}: {message}"
                 send_message(connection_socket, message.encode())
         except:
             print("Exception error when receiving data.")
