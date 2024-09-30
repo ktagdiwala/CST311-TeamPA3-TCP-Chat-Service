@@ -26,28 +26,38 @@ names = []
 
 
 def connection_handler(connection_socket, address):
+    # Sends the client a welcome message for the chat service
+    welcome_message = "Welcome to the chat! To send a message, type the message and click enter."
+    connection_socket.send(welcome_message.encode())
+
+    # Initializes message to an empty string
     message = ""
 
+    # If the sender sent "bye", server disconnects the sender client
     while message != "bye":
         try:
+            # Waits to receive a message from the client
             message = connection_socket.recv(1024).decode()
 
-            log.info("Message received by " + address[0] + ". Message: " + message)
+            # Logs messages exchanged by clients (used for debugging purposes)
+            # log.info("Message received by " + address[0] + ". Message: " + message)
 
+            # Checks to see if the client sends "bye"
+            # Notifies the other client accordingly
             if message == "bye":
                 disconnect_message = f"{address[0]}" + " has left the chat"
                 send_message(connection_socket, disconnect_message.encode())
+            # Otherwise, the server relays the message sent by the sender client to the receiver client
             else:
                 message = f"{address[0]}: " + message
                 send_message(connection_socket, message.encode())
         except:
             print("Exception error when receiving data.")
             break
-
     users.remove(connection_socket)
     connection_socket.close()
 
-
+# Sends messages from one client to the other client
 def send_message(connection_socket, message):
     for socket in users:
         if socket is not connection_socket:
@@ -76,6 +86,7 @@ def main():
             connection_socket, address = server_socket.accept()
             log.info("Connected to client at " + str(address))
 
+            # Keeps track of the connection sockets to relay messages between clients
             users.append(connection_socket)
 
             # Setting up multiple threads to accept connections
