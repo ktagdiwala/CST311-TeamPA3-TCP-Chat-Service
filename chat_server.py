@@ -11,8 +11,6 @@ __credits__ = [
 
 import socket as s
 import threading
-
-# Configure logging
 import logging
 
 logging.basicConfig()
@@ -23,6 +21,7 @@ server_port = 12000
 
 users = []
 names = []
+offline_messages = []  # List to store offline messages (each element is a tuple)
 
 
 def connection_handler(connection_socket, address):
@@ -35,6 +34,12 @@ def connection_handler(connection_socket, address):
     connection_socket.send("Enter username: ".encode())
     username = connection_socket.recv(1024).decode()
 
+    # Add the new client to the names list
+    names.append(username)
+
+    # Send any offline messages to the user upon connection
+    send_offline_messages(username, connection_socket)
+
     # Initializes message to an empty string
     message = ""
 
@@ -43,24 +48,27 @@ def connection_handler(connection_socket, address):
         try:
             # Waits to receive a message from the client
             message = connection_socket.recv(1024).decode()
-            # Logs messages exchanged by clients (used for debugging purposes)
-            # log.info("Message received by " + address[0] + ". Message: " + message)
 
             # Checks to see if the client sends "bye"
-            # Notifies the other client accordingly
             if message == "bye":
                 disconnect_message = f"{username} has left the chat"
                 send_message(connection_socket, disconnect_message.encode())
-            # Otherwise, the server relays the message sent by the sender client to the receiver client
             else:
-                message = f"{username}: {message}"
-                send_message(connection_socket, message.encode())
+                # Otherwise, the server relays the message or stores it as an offline message
+                message_to_send = f"{username}: {message}"
+                if len(users) > 1:
+                    send_message(connection_socket, message_to_send.encode())
+                else:
+                    store_offline_message(username, message)  # Store if the other user isn't connected
         except:
             print("Exception error when receiving data.")
             break
-    # Once user terminates session, close socket
+
+    # Once user terminates session, close socket and remove username
     users.remove(connection_socket)
+    names.remove(username)
     connection_socket.close()
+
 
 # Sends messages from one client to the other client
 def send_message(connection_socket, message):
@@ -69,9 +77,28 @@ def send_message(connection_socket, message):
             socket.send(message)
 
 
+# Stores offline messages if the other user isn't connected
+def store_offline_message(sender, message):
+    offline_messages.append((sender, message))  # Storing tuple (username, message)
+
+# Sends all stored offline messages to the connected user
+def send_offline_messages(username, connection_socket):
+    global offline_messages
+
+    delivered_messages = []
+
+    # Deliver all messages from the other user to this user
+    for message in offline_messages:
+        sender, offline_message = message
+        if sender != username:  # Deliver messages sent by other users
+            connection_socket.send(f"{sender}: {offline_message}\n".encode())
+            delivered_messages.append(message)  # Mark message for deletion
+
+    # Remove the delivered messages from the offline_messages list
+    offline_messages = [msg for msg in offline_messages if msg not in delivered_messages]
+
 def main():
     # Create a TCP socket
-    # Notice the use of SOCK_STREAM for TCP packets
     server_socket = s.socket(s.AF_INET, s.SOCK_STREAM)
 
     # Assign port number to socket, and bind to chosen port
@@ -98,8 +125,6 @@ def main():
             thread = threading.Thread(target=connection_handler, args=(connection_socket, address))
             thread.start()
 
-            # # Pass the new socket and address off to a connection handler function
-            # connection_handler(connection_socket, address)
     finally:
         server_socket.close()
 
