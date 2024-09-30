@@ -1,11 +1,12 @@
 #!env python
 
 """Chat server for CST311 Programming Assignment 3"""
-__author__ = "[team name here]"
+__author__ = "[Stack Otterflow]"
 __credits__ = [
-  "Your",
-  "Names",
-  "Here"
+  "Krishna Tagdiwala",
+  "Jorge Vazquez",
+  "Walid Elgammal",
+  "Jesus Martinez Miranda"
 ]
 
 

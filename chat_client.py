@@ -1,11 +1,12 @@
 #!env python
 
 """Chat client for CST311 Programming Assignment 3"""
-__author__ = "[team name here]"
+__author__ = "[Stack Otterflow]"
 __credits__ = [
-  "Your",
-  "Names",
-  "Here"
+  "Krishna Tagdiwala",
+  "Jorge Vazquez",
+  "Walid Elgammal",
+  "Jesus Martinez Miranda"
 ]
 
 # Import statements
@@ -18,7 +19,7 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
 # Set global variables
-server_name = 'localhost'
+server_name = '10.0.0.1'
 server_port = 12000
 
 def main():
