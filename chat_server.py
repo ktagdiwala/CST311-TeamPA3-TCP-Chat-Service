@@ -35,7 +35,7 @@ def connection_handler(connection_socket, address):
             log.info("Message received by " + address[0] + ". Message: " + message)
 
             if message == "bye":
-                disconnect_message = f"{address[0]} " + " has left the chat"
+                disconnect_message = f"{address[0]}" + " has left the chat"
                 send_message(connection_socket, disconnect_message.encode())
             else:
                 message = f"{address[0]}: " + message
