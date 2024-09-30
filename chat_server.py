@@ -10,7 +10,6 @@ __credits__ = [
 ]
 
 import socket as s
-import time
 import threading
 
 # Configure logging
@@ -32,9 +31,16 @@ def connection_handler(connection_socket, address):
     while message.decode() != "bye":
         try:
             message = connection_socket.recv(1024)
-            send_message(connection_socket, message)
+            message_decoded = message.decode()
+
+            log.info("Message received by " + address[0] + ". Message: " + message_decoded)
+
+            message_decoded = f"{address[0]}: " + message_decoded
+
+            send_message(connection_socket, message_decoded.encode())
         except:
             print("Exception error when receiving data.")
+            break
 
     users.remove(connection_socket)
     connection_socket.close()

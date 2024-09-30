@@ -91,7 +91,7 @@ def recieve_message(client_socket):
         try:
             response = client_socket.recv(1024)
             response_decoded = response.decode()
-            print("Other user said: " + response_decoded)
+            print(response_decoded)
         except:
             print("Leaving chat...")
             break
