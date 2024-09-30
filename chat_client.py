@@ -42,35 +42,12 @@ def main():
             log.error("\tNo specific advice, please contact teaching staff and include text of error and code.")
         exit(8)
 
+    # Creates and starts threads for sending and receiving messages
+    # So that both functions occur simeltaneously (in real-time)
     sending_thread = threading.Thread(target=send_message, args=(client_socket,))
     receiving_thread = threading.Thread(target=recieve_message, args=(client_socket,))
     sending_thread.start()
     receiving_thread.start()
-
-    # # Get input from user
-    # user_input = input('Input lowercase sentence:')
-    #
-    # while user_input != "bye":
-    #     # Wrap in a try-finally to ensure the socket is properly closed regardless of errors
-    #     try:
-    #         # Set data across socket to server
-    #         #  Note: encode() converts the string to UTF-8 for transmission
-    #         client_socket.send(user_input.encode())
-    #
-    #         # Read response from server
-    #         server_response = client_socket.recv(1024)
-    #         # Decode server response from UTF-8 bytestream
-    #         server_response_decoded = server_response.decode()
-    #
-    #         # Print output from server
-    #         print('From Server:')
-    #         print(server_response_decoded)
-    #         # Get input from user
-    #         user_input = input('Input lowercase sentence:')
-    #     except:
-    #         print("Exception occurred when sending message")
-    #
-    # client_socket.close()
 
 # Allows the client to send messages to the other client through the server
 def send_message(client_socket):
@@ -88,7 +65,8 @@ def recieve_message(client_socket):
 
     response = ""
 
-    while response != "bye":
+    # Constantly checks to see if the server has relayed any messages
+    while True:
         try:
             response = client_socket.recv(1024)
             response_decoded = response.decode()
