@@ -21,9 +21,8 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
 # Set global variables
-server_name = '10.0.0.2'
+server_name = '10.0.0.1'
 server_port = 12000
-
 
 def main():
     # Create socket
@@ -47,8 +46,6 @@ def main():
     receiving_thread = threading.Thread(target=recieve_message, args=(client_socket,))
     sending_thread.start()
     receiving_thread.start()
-    sending_thread.join()
-    receiving_thread.join()
 
     # # Get input from user
     # user_input = input('Input lowercase sentence:')
@@ -77,28 +74,28 @@ def main():
 
 # Allows the client to send messages to the other client through the server
 def send_message(client_socket):
-
     message = ""
 
     # Checks to see if the message is "bye" to determine when the client wants to disconnect
     while message != "bye":
-      message = input('')
-      client_socket.send(message.encode())
-    
-    # Client disconnects from the chat service
+        message = input('')
+        client_socket.send(message.encode())
+
     client_socket.close()
 
 # Allows the client to receive messages from the other client through the server
 def recieve_message(client_socket):
 
-  response_decoded = ""
-  while (response_decoded != "bye"):
-    response = client_socket.recv(1024)
-    response_decoded = response.decode()
+    response = ""
 
-    print("Other user said: " + response_decoded)
-
-  print("Other user has left the chat.")
+    while response != "bye":
+        try:
+            response = client_socket.recv(1024)
+            response_decoded = response.decode()
+            print("Other user said: " + response_decoded)
+        except:
+            print("Leaving chat...")
+            break
 
 
 # This helps shield code from running when we import the module
