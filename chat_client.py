@@ -24,7 +24,6 @@ log.setLevel(logging.DEBUG)
 server_name = '10.0.0.2'
 server_port = 12000
 
-
 def main():
     # Create socket
     client_socket = s.socket(s.AF_INET, s.SOCK_STREAM)
@@ -47,8 +46,6 @@ def main():
     receiving_thread = threading.Thread(target=recieve_message, args=(client_socket,))
     sending_thread.start()
     receiving_thread.start()
-    sending_thread.join()
-    receiving_thread.join()
 
     # # Get input from user
     # user_input = input('Input lowercase sentence:')
@@ -77,26 +74,27 @@ def main():
 
 
 def send_message(client_socket):
-
     message = ""
 
     while message != "bye":
-      message = input('')
-      client_socket.send(message.encode())
-    
+        message = input('')
+        client_socket.send(message.encode())
+
     client_socket.close()
 
 
 def recieve_message(client_socket):
 
-  response = ""
-  while (response != "bye"):
-    response = client_socket.recv(1024)
-    response_decoded = response.decode()
+    response = ""
 
-    print("Other user said: " + response_decoded)
-
-  print("Other user has left the chat.")
+    while response != "bye":
+        try:
+            response = client_socket.recv(1024)
+            response_decoded = response.decode()
+            print("Other user said: " + response_decoded)
+        except:
+            print("Leaving chat...")
+            break
 
 
 # This helps shield code from running when we import the module
