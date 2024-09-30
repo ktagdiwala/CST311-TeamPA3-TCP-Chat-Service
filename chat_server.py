@@ -89,8 +89,6 @@ def store_offline_message(sender, message):
 # Sends all stored offline messages to the connected user
 def send_offline_messages(username, connection_socket):
     global offline_messages
-
-
     # Deliver all messages from the other user to this user
     for message in offline_messages:
         sender, offline_message = message
