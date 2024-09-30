@@ -21,7 +21,7 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
 # Set global variables
-server_name = '10.0.0.1'
+server_name = '10.0.0.2'
 server_port = 12000
 
 def main():
@@ -72,18 +72,17 @@ def main():
     #
     # client_socket.close()
 
-# Allows the client to send messages to the other client through the server
+
 def send_message(client_socket):
     message = ""
 
-    # Checks to see if the message is "bye" to determine when the client wants to disconnect
     while message != "bye":
         message = input('')
         client_socket.send(message.encode())
 
     client_socket.close()
 
-# Allows the client to receive messages from the other client through the server
+
 def recieve_message(client_socket):
 
     response = ""

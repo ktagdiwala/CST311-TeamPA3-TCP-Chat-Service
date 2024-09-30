@@ -26,18 +26,20 @@ names = []
 
 
 def connection_handler(connection_socket, address):
-    message = "".encode()
+    message = ""
 
-    while message.decode() != "bye":
+    while message != "bye":
         try:
-            message = connection_socket.recv(1024)
-            message_decoded = message.decode()
+            message = connection_socket.recv(1024).decode()
 
-            log.info("Message received by " + address[0] + ". Message: " + message_decoded)
+            log.info("Message received by " + address[0] + ". Message: " + message)
 
-            message_decoded = f"{address[0]}: " + message_decoded
-
-            send_message(connection_socket, message_decoded.encode())
+            if message == "bye":
+                disconnect_message = f"{address[0]} " + " has left the chat"
+                send_message(connection_socket, disconnect_message.encode())
+            else:
+                message = f"{address[0]}: " + message
+                send_message(connection_socket, message.encode())
         except:
             print("Exception error when receiving data.")
             break
@@ -58,7 +60,7 @@ def main():
     server_socket = s.socket(s.AF_INET, s.SOCK_STREAM)
 
     # Assign port number to socket, and bind to chosen port
-    server_socket.bind(('10.0.0.2', server_port))
+    server_socket.bind(('10.0.0.1', server_port))
 
     # Configure how many requests can be queued on the server at once
     server_socket.listen(1)
